@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $cek = db()->prepare('SELECT id FROM users WHERE email = ?');
+        $cek = db()->prepare('SELECT id FROM pengguna WHERE email = ?');
         $cek->execute([$email]);
         if ($cek->fetch()) {
             $errors[] = 'Email sudah terdaftar.';
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$errors) {
         // Role SELALU 'anggota'. Tidak ada input role di form, jadi tidak bisa daftar sendiri jadi pustakawan/manajemen.
-        $simpan = db()->prepare('INSERT INTO users (nama, email, password_hash, role) VALUES (?, ?, ?, ?)');
+        $simpan = db()->prepare('INSERT INTO pengguna (nama, email, password_hash, role) VALUES (?, ?, ?, ?)');
         $simpan->execute([$nama, $email, password_hash($password, PASSWORD_DEFAULT), 'anggota']);
         header('Location: ' . BASE_URL . '/login.php?daftar=1');
         exit;
