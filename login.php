@@ -11,11 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = strtolower(trim($_POST['email'] ?? ''));
     $password = $_POST['password'] ?? '';
 
-    $stmt = db()->prepare('SELECT id, nama, email, password_hash, role FROM pengguna WHERE email = ?');
+    $stmt = db()->prepare('SELECT id, nama, email, password_hash, role, status FROM pengguna WHERE email = ?');
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
-    if ($user && password_verify($password, $user['password_hash'])) {
+    if ($user && $user['status'] === 'aktif' && password_verify($password, $user['password_hash'])) {
         session_regenerate_id(true);
         $_SESSION['user'] = [
             'id'    => (int) $user['id'],

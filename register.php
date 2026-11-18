@@ -38,9 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
+        // Generate id_anggota otomatis: SL-2026-XXXX
+        $last = db()->query("SELECT id_anggota FROM pengguna WHERE id_anggota LIKE 'SL-%' ORDER BY id DESC LIMIT 1")->fetchColumn();
+        $next = $last ? ((int) substr($last, strrpos($last, '-') + 1)) + 1 : 1;
+        $id_anggota = 'SL-' . date('Y') . '-' . str_pad($next, 4, '0', STR_PAD_LEFT);
+
         // Role SELALU 'anggota'. Tidak ada input role di form, jadi tidak bisa daftar sendiri jadi pustakawan/manajemen.
-        $simpan = db()->prepare('INSERT INTO pengguna (nama, email, password_hash, role) VALUES (?, ?, ?, ?)');
-        $simpan->execute([$nama, $email, password_hash($password, PASSWORD_DEFAULT), 'anggota']);
+        $simpan = db()->prepare('INSERT INTO pengguna (id_anggota, nama, email, password_hash, role) VALUES (?, ?, ?, ?, ?)');
+        $simpan->execute([$id_anggota, $nama, $email, password_hash($password, PASSWORD_DEFAULT), 'anggota']);
         header('Location: ' . BASE_URL . '/login.php?daftar=1');
         exit;
     }
